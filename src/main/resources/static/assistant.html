@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assistente — METRON</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .preset-btn {
+      background: #ffffff;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      text-align: left;
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--color-navy);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      line-height: 1.4;
+      box-shadow: var(--shadow-subtle);
+    }
+    .preset-btn:hover {
+      background: var(--color-primary-light);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .resp-card {
+      background: #ffffff;
+      border: 1px solid var(--color-border);
+      border-top: 5px solid var(--color-primary);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem;
+      box-shadow: var(--shadow-lg);
+      margin-top: 2rem;
+    }
+    .resp-section {
+      margin-bottom: 1.5rem;
+    }
+    .resp-section:last-child {
+      margin-bottom: 0;
+    }
+    .resp-label {
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-muted);
+      margin-bottom: 0.35rem;
+    }
+    .resp-text {
+      font-size: 1.05rem;
+      color: var(--color-navy);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <header id="navbarContainer"></header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Assistente Financeiro</h1>
+      <p class="page-subtitle">
+        Tire duvidas e receba orientacoes praticas para melhorar suas financas com base nos seus numeros reais.
+      </p>
+    </div>
+
+    <!-- Perguntas Frequentes em Botoes Grandes -->
+    <div class="card">
+      <h2 class="card-title">Perguntas Mais Comuns</h2>
+      <p class="card-desc">Clique em qualquer pergunta abaixo para receber uma analise imediata:</p>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1rem;">
+        <button class="preset-btn" onclick="askPreset('Como está a saúde geral das minhas finanças?')">
+          Como está a saúde geral das minhas finanças?
+        </button>
+        <button class="preset-btn" onclick="askPreset('Onde estou gastando mais dinheiro este mês?')">
+          Onde estou gastando mais dinheiro este mês?
+        </button>
+        <button class="preset-btn" onclick="askPreset('Quanto posso gastar hoje com total segurança?')">
+          Quanto posso gastar hoje com total segurança?
+        </button>
+        <button class="preset-btn" onclick="askPreset('Quais são as melhores formas de economizar agora?')">
+          Quais são as melhores formas de economizar agora?
+        </button>
+        <button class="preset-btn" onclick="askPreset('Minhas contas pendentes do mês estão seguras?')">
+          Minhas contas pendentes do mês estão seguras?
+        </button>
+        <button class="preset-btn" onclick="askPreset('Meu ritmo de gastos está dentro do planejado?')">
+          Meu ritmo de gastos está dentro do planejado?
+        </button>
+      </div>
+    </div>
+
+    <!-- Pergunta Livre -->
+    <div class="card">
+      <h2 class="card-title">Fazer Outra Pergunta</h2>
+      <p class="card-desc">Digite sua duvida sobre seu dinheiro, despesas ou metas:</p>
+
+      <form id="assistantForm">
+        <div class="form-group">
+          <input type="text" id="assistantInput" class="form-control" style="min-height:52px; font-size:1.05rem;" placeholder="Exemplo: Devo cortar gastos com lazer? Ou posso comprar algo hoje?" required>
+        </div>
+        <button type="submit" class="btn btn-primary" id="btnAsk" style="min-height:48px; padding:0.75rem 2rem; font-size:1.05rem;">
+          Consultar Assistente
+        </button>
+      </form>
+    </div>
+
+    <!-- Resposta Estruturada do Assistente -->
+    <div id="assistantResponseContainer" class="resp-card" style="display:none;" aria-live="polite">
+      <div style="border-bottom:1px solid var(--color-border); padding-bottom:1rem; margin-bottom:1.5rem;">
+        <div class="resp-label">Consulta Realizada</div>
+        <h3 id="respQuestionTitle" style="font-size:1.3rem; font-weight:700; color:var(--color-navy); margin:0;"></h3>
+      </div>
+
+      <div class="resp-section">
+        <div class="resp-label">1. Analise da Sua Situacao</div>
+        <div class="resp-text" id="respSituation"></div>
+      </div>
+
+      <div class="resp-section">
+        <div class="resp-label">2. Numeros Utilizados</div>
+        <div class="resp-text" id="respUsedData" style="background:#f8fafc; padding:0.75rem 1rem; border-radius:var(--radius-sm); border:1px solid var(--color-border); font-size:0.95rem;"></div>
+      </div>
+
+      <div class="resp-section">
+        <div class="resp-label">3. O Que Calculamos</div>
+        <div class="resp-text" id="respCalculations" style="color:#0f766e; font-weight:600;"></div>
+      </div>
+
+      <div class="resp-section">
+        <div class="resp-label">4. Recomendacao Pratica</div>
+        <div class="resp-text" id="respRecommendation" style="font-size:1.1rem; font-weight:600; color:var(--color-navy);"></div>
+      </div>
+
+      <div class="resp-section" id="boxEstimatedSavings">
+        <div class="resp-label">5. Economia Estimada</div>
+        <div class="resp-text" id="respEstimatedSavings" style="color:#047857; font-weight:700;"></div>
+      </div>
+
+      <div class="resp-section">
+        <div class="resp-label">6. Proximo Passo Sugerido</div>
+        <div class="resp-text" id="respNextAction" style="background:var(--color-primary-light); padding:1rem 1.25rem; border-left:5px solid var(--color-primary); border-radius:var(--radius-sm); font-weight:600;"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="metron-footer">
+    <p><strong>METRON</strong> — Nao desperdice seu tempo e seu dinheiro.</p>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!API.requireAuth()) return;
+      renderNavbar('assistant');
+
+      document.getElementById('assistantForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const input = document.getElementById('assistantInput').value.trim();
+        if (input) await askAssistant(input);
+      });
+    });
+
+    window.askPreset = function(q) {
+      document.getElementById('assistantInput').value = q;
+      askAssistant(q);
+    };
+
+    async function askAssistant(q) {
+      const btn = document.getElementById('btnAsk');
+      btn.disabled = true;
+      btn.textContent = 'Analisando seus dados...';
+
+      try {
+        const res = await API.askAssistant(q);
+        renderResponse(res);
+      } catch (err) {
+        UI.showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Consultar Assistente';
+      }
+    }
+
+    function sanitizeBrl(text) {
+      if (!text) return '';
+      return text.replace(/R\$\s*(\d+)\.(\d{2})/g, (match, p1, p2) => {
+        const num = Number(p1).toLocaleString('pt-BR');
+        return `R$ ${num},${p2}`;
+      });
+    }
+
+    function renderResponse(res) {
+      const container = document.getElementById('assistantResponseContainer');
+      container.style.display = 'block';
+
+      document.getElementById('respQuestionTitle').textContent = `"${res.question}"`;
+      document.getElementById('respSituation').textContent = sanitizeBrl(res.situationAnalysis);
+      document.getElementById('respUsedData').textContent = sanitizeBrl(res.usedData);
+      document.getElementById('respCalculations').textContent = sanitizeBrl(res.calculationsPerformed);
+      document.getElementById('respRecommendation').textContent = sanitizeBrl(res.recommendation);
+
+      const savEl = document.getElementById('respEstimatedSavings');
+      if (res.estimatedSavings && res.estimatedSavings !== 'R$ 0,00' && res.estimatedSavings !== '0') {
+        savEl.textContent = sanitizeBrl(res.estimatedSavings);
+        document.getElementById('boxEstimatedSavings').style.display = 'block';
+      } else {
+        document.getElementById('boxEstimatedSavings').style.display = 'none';
+      }
+
+      document.getElementById('respNextAction').textContent = sanitizeBrl(res.suggestedNextAction);
+
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

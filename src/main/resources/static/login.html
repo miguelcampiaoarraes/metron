@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — METRON</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+      padding: 1.5rem;
+    }
+    .auth-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      max-width: 440px;
+      width: 100%;
+      padding: 2.25rem;
+      border: 1px solid var(--color-border);
+    }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .auth-logo {
+      height: 48px;
+      margin-bottom: 0.75rem;
+    }
+    .auth-slogan {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="auth-page">
+
+  <div class="auth-card">
+    <div class="auth-header">
+      <a href="/"><img src="/assets/logo.svg" alt="METRON" class="auth-logo"></a>
+      <p class="auth-slogan">Não desperdice seu tempo e seu dinheiro.</p>
+    </div>
+
+    <!-- Alerta Inline de Erro / Informação -->
+    <div id="loginAlert" style="display:none; background:#fef2f2; border:1.5px solid #fca5a5; color:#991b1b; padding:0.85rem 1rem; border-radius:var(--radius-md); font-size:0.92rem; font-weight:500; margin-bottom:1.25rem;" role="alert"></div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label class="form-label" for="email">E-mail</label>
+        <input type="email" id="email" class="form-control" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <label class="form-label" for="password">Senha</label>
+          <a href="#" id="btnForgotPassword" style="font-size: 0.8rem;">Esqueceu a senha?</a>
+        </div>
+        <input type="password" id="password" class="form-control" placeholder="Digite sua senha" required autocomplete="current-password">
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.75rem;">
+        Entrar na Plataforma
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--color-text-muted);">
+      Não tem uma conta? <a href="/register.html" style="font-weight: 600;">Cadastre-se gratuitamente</a>
+    </div>
+  </div>
+
+  <!-- Password Reset Modal -->
+  <div class="modal-overlay" id="resetModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Recuperação de Senha</h3>
+        <button class="btn-close" id="btnCloseResetModal">&times;</button>
+      </div>
+      <form id="resetForm">
+        <div class="modal-body">
+          <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 1rem;">
+            Informe seu e-mail cadastrado e a nova senha desejada para redefinir seu acesso.
+          </p>
+          <div class="form-group">
+            <label class="form-label" for="resetEmail">E-mail Cadastrado</label>
+            <input type="email" id="resetEmail" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="resetNewPassword">Nova Senha</label>
+            <input type="password" id="resetNewPassword" class="form-control" required minlength="6" placeholder="Mínimo 6 caracteres">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelReset">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Redefinir Senha</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    // If already logged in, redirect
+    if (API.getToken()) {
+      window.location.href = '/dashboard.html';
+    }
+
+    const loginForm = document.getElementById('loginForm');
+    const loginAlert = document.getElementById('loginAlert');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginAlert.style.display = 'none';
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await API.login(email, password);
+        API.setSession(res.token, res.user);
+        UI.showToast('Login realizado com sucesso! Redirecionando...', 'success');
+        setTimeout(() => {
+          window.location.href = '/dashboard.html';
+        }, 600);
+      } catch (err) {
+        const msg = err.message || 'E-mail ou senha incorretos. Verifique suas credenciais.';
+        loginAlert.textContent = msg;
+        loginAlert.style.display = 'block';
+        UI.showToast(msg, 'error');
+      }
+    });
+
+    // Password Reset
+    const resetModal = document.getElementById('resetModal');
+    const btnForgot = document.getElementById('btnForgotPassword');
+    const btnCloseModal = document.getElementById('btnCloseResetModal');
+    const btnCancel = document.getElementById('btnCancelReset');
+    const resetForm = document.getElementById('resetForm');
+
+    btnForgot.addEventListener('click', (e) => {
+      e.preventDefault();
+      resetModal.classList.add('active');
+    });
+    btnCloseModal.addEventListener('click', () => resetModal.classList.remove('active'));
+    btnCancel.addEventListener('click', () => resetModal.classList.remove('active'));
+
+    resetForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('resetEmail').value.trim();
+      const newPassword = document.getElementById('resetNewPassword').value;
+
+      try {
+        await API.resetPassword(email, newPassword);
+        UI.showToast('Senha redefinida com sucesso! Você já pode entrar.', 'success');
+        resetModal.classList.remove('active');
+        document.getElementById('email').value = email;
+        document.getElementById('password').value = newPassword;
+      } catch (err) {
+        UI.showToast(err.message, 'error');
+      }
+    });
+  </script>
+</body>
+</html>

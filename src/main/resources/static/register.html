@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro — METRON</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+      padding: 2rem 1.5rem;
+    }
+    .auth-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      max-width: 520px;
+      width: 100%;
+      padding: 2.5rem;
+      border: 1px solid var(--color-border);
+    }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+    .auth-logo {
+      height: 48px;
+      margin-bottom: 0.5rem;
+    }
+    .auth-slogan {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body class="auth-page">
+
+  <div class="auth-card">
+    <div class="auth-header">
+      <a href="/"><img src="/assets/logo.svg" alt="METRON" class="auth-logo"></a>
+      <p class="auth-slogan">Não desperdice seu tempo e seu dinheiro.</p>
+    </div>
+
+    <form id="registerForm">
+      <div class="form-group">
+        <label class="form-label" for="name">Nome Completo</label>
+        <input type="text" id="name" class="form-control" required minlength="2">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">E-mail</label>
+        <input type="email" id="email" class="form-control" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Senha</label>
+        <input type="password" id="password" class="form-control" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="monthlyIncome">Renda Mensal (R$)</label>
+          <input type="number" id="monthlyIncome" class="form-control" placeholder="Ex: 3500.00" step="0.01" min="0" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="salaryDay">Dia do Salário</label>
+          <input type="number" id="salaryDay" class="form-control" placeholder="Ex: 5" min="1" max="31" value="5" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="currentBankBalance">Saldo Atual em Conta (R$)</label>
+          <input type="number" id="currentBankBalance" class="form-control" placeholder="Ex: 1200.00" step="0.01" min="0" value="0.00">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="savingsGoalMonthly">Meta Poupança Mensal (R$)</label>
+          <input type="number" id="savingsGoalMonthly" class="form-control" placeholder="Ex: 500.00" step="0.01" min="0" value="0.00">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.8rem; font-size: 1rem;">
+        Criar Minha Conta na METRON
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--color-text-muted);">
+      Já possui uma conta? <a href="/login.html" style="font-weight: 600;">Faça login</a>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    if (API.getToken()) {
+      window.location.href = '/dashboard.html';
+    }
+
+    const registerForm = document.getElementById('registerForm');
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value,
+        monthlyIncome: parseFloat(document.getElementById('monthlyIncome').value) || 0,
+        salaryDay: parseInt(document.getElementById('salaryDay').value) || 5,
+        currentBankBalance: parseFloat(document.getElementById('currentBankBalance').value) || 0,
+        savingsGoalMonthly: parseFloat(document.getElementById('savingsGoalMonthly').value) || 0
+      };
+
+      try {
+        const res = await API.register(data);
+        API.setSession(res.token, res.user);
+        UI.showToast('Conta criada com sucesso! Bem-vindo à METRON.', 'success');
+        setTimeout(() => {
+          window.location.href = '/dashboard.html';
+        }, 600);
+      } catch (err) {
+        UI.showToast(err.message, 'error');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administração Geral — METRON</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <header id="navbarContainer"></header>
+
+  <main class="main-content">
+    <!-- Cabeçalho Principal -->
+    <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:1.25rem;">
+      <div>
+        <h1 class="page-title" id="welcomeUserTitle">Administração Financeira</h1>
+        <p class="page-subtitle">Organize seu salário, seus ganhos extras, suas contas fixas e saiba exatamente quanto pode gastar no dia a dia.</p>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-secondary btn-sm" id="btnOpenSalaryModal">
+          Configurar Salário &amp; Poupança
+        </button>
+      </div>
+    </div>
+
+    <!-- 1. PAINEL HERO: O Resumo Executivo da Sua Vida Financeira no Mês -->
+    <section class="finance-hero-banner" aria-label="Resumo Financeiro do Mês">
+      <div class="hero-header-row">
+        <div>
+          <h2 class="hero-main-title" id="heroPeriodTitle">Meu Planejamento deste Mês</h2>
+          <div style="font-size:0.88rem; color:#94a3b8; margin-top:0.25rem;">
+            Salário + Ganhos Extras - Contas Fixas - Guardar no Mês = Sobra Livre para Gastar
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="btnHeroOpenSalaryModal" style="background:rgba(255,255,255,0.12); color:#ffffff; border-color:rgba(255,255,255,0.25);">
+          Ajustar Salário &amp; Poupança
+        </button>
+      </div>
+
+      <div class="hero-metrics-flow">
+        <!-- Pilar 1: Salário -->
+        <div class="hero-pillar">
+          <span class="pillar-label">1. Meu Salário</span>
+          <div class="pillar-amount income tnum" id="displaySalary">R$ 0,00</div>
+          <span class="pillar-subtext" id="displaySalaryDay">Pagamento no dia 5</span>
+        </div>
+
+        <!-- Pilar 2: Ganhos Extras -->
+        <div class="hero-pillar">
+          <span class="pillar-label">+ 2. Ganhos Extras</span>
+          <div class="pillar-amount extra tnum" id="displayExtraTotal">R$ 0,00</div>
+          <span class="pillar-subtext" id="displayExtraCount">0 extras no mês</span>
+        </div>
+
+        <!-- Pilar 3: Contas Fixas -->
+        <div class="hero-pillar">
+          <span class="pillar-label">- 3. Contas Fixas</span>
+          <div class="pillar-amount fixed tnum" id="displayFixedTotal">R$ 0,00</div>
+          <span class="pillar-subtext" id="displayFixedCount">0 contas cadastradas</span>
+        </div>
+
+        <!-- Pilar 4: Guardar por Mês (Meta de Poupança) -->
+        <div class="hero-pillar">
+          <span class="pillar-label">- 4. Guardar no Mês</span>
+          <div class="pillar-amount savings tnum" id="displaySavingsGoal">R$ 0,00</div>
+          <span class="pillar-subtext">Reservado para poupança</span>
+        </div>
+
+        <!-- Pilar 5: Quanto Posso Gastar Hoje -->
+        <div class="hero-pillar highlight">
+          <span class="pillar-label" style="color:#2dd4bf;">= Quanto Posso Gastar</span>
+          <div class="pillar-amount safe tnum" id="displayDailySafe">R$ 0,00</div>
+          <span class="pillar-subtext" id="displayDailyDaysLeft">Ritmo seguro por dia</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. SEÇÃO: CONTAS FIXAS DO MÊS -->
+    <section class="content-section" aria-labelledby="fixedCostsTitle">
+      <div class="section-header-row">
+        <div>
+          <h2 class="section-heading-title" id="fixedCostsTitle">1. Minhas Contas Fixas do Mês</h2>
+          <p class="section-heading-desc">Tudo o que você precisa pagar todo mês: aluguel, condomínio, internet, água, luz, assinaturas ou parcelas.</p>
+        </div>
+        <div class="tnum" style="font-size:1.1rem; font-weight:700; color:#b91c1c;" id="fixedSectionTotal">
+          Total em Contas: R$ 0,00
+        </div>
+      </div>
+
+      <!-- Formulário Rápido de Contas Fixas -->
+      <div class="quick-add-card">
+        <div style="font-size:0.95rem; font-weight:700; color:var(--color-navy); margin-bottom:0.75rem;">
+          + Adicionar Nova Conta Fixa
+        </div>
+        <form id="quickFixedForm" class="quick-form-grid quick-form-grid-fixed">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="fixedDesc" style="font-size:0.85rem;">Nome da Conta</label>
+            <input type="text" id="fixedDesc" class="form-control" placeholder="Ex: Aluguel, Internet, Luz" required>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="fixedAmount" style="font-size:0.85rem;">Valor (R$)</label>
+            <input type="number" id="fixedAmount" class="form-control" step="0.01" min="0.01" placeholder="0,00" required style="font-weight:700;">
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="fixedCategory" style="font-size:0.85rem;">Categoria de Custo</label>
+            <select id="fixedCategory" class="form-control" required>
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="fixedDay" style="font-size:0.85rem;">Dia Vencimento</label>
+            <input type="number" id="fixedDay" class="form-control" min="1" max="31" placeholder="Ex: 10" required>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="fixedDuration" style="font-size:0.85rem;">Duração</label>
+            <select id="fixedDuration" class="form-control">
+              <option value="forever">Fixo todo mês</option>
+              <option value="3">Durante 3 meses</option>
+              <option value="6">Durante 6 meses</option>
+              <option value="12">Durante 12 meses</option>
+              <option value="24">Durante 24 meses</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom:0;">
+            <button type="submit" class="btn btn-primary" style="min-width:140px; width:100%;">
+              Salvar Conta
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tabela de Contas Fixas -->
+      <div class="table-wrapper">
+        <table class="clean-table" aria-label="Tabela de Contas Fixas">
+          <thead>
+            <tr>
+              <th scope="col" style="width:110px;">Vencimento</th>
+              <th scope="col">Conta / Descrição</th>
+              <th scope="col">Categoria de Custo</th>
+              <th scope="col" style="text-align:right;">Valor</th>
+              <th scope="col" style="text-align:center; width:140px;">Situação</th>
+              <th scope="col" style="text-align:right; width:140px;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="fixedExpensesBody">
+            <tr>
+              <td colspan="6" style="text-align:center; padding:2.5rem; color:var(--color-muted);">
+                Nenhuma conta fixa cadastrada. Use o formulário acima para adicionar aluguel, internet, luz, parcelas, etc.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3. SEÇÃO: GANHOS EXTRAS NO MÊS -->
+    <section class="content-section" aria-labelledby="extraIncomeTitle">
+      <div class="section-header-row">
+        <div>
+          <h2 class="section-heading-title" id="extraIncomeTitle">2. Ganhos Extras no Mês</h2>
+          <p class="section-heading-desc">Rendas adicionais recebidas além do seu salário base: 13º salário, bônus, comissões, vendas de itens ou rendimentos.</p>
+        </div>
+        <div class="tnum" style="font-size:1.1rem; font-weight:700; color:#047857;" id="extraSectionTotal">
+          Total de Extras: R$ 0,00
+        </div>
+      </div>
+
+      <!-- Formulário Rápido de Ganho Extra -->
+      <div class="quick-add-card">
+        <div style="font-size:0.95rem; font-weight:700; color:var(--color-navy); margin-bottom:0.75rem;">
+          + Adicionar Ganho Extra
+        </div>
+        <form id="quickExtraForm" class="quick-form-grid quick-form-grid-extra">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="extraDesc" style="font-size:0.85rem;">Origem do Ganho</label>
+            <input type="text" id="extraDesc" class="form-control" placeholder="Ex: 13º Salário, Venda de item, Bônus, Comissão" required>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="extraAmount" style="font-size:0.85rem;">Valor (R$)</label>
+            <input type="number" id="extraAmount" class="form-control" step="0.01" min="0.01" placeholder="0,00" required style="font-weight:700;">
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="extraDate" style="font-size:0.85rem;">Data Recebimento</label>
+            <input type="date" id="extraDate" class="form-control" required>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="extraStatus" style="font-size:0.85rem;">Situação</label>
+            <select id="extraStatus" class="form-control">
+              <option value="RECEBIDO">Já Recebido</option>
+              <option value="PREVISTO">A Receber (Previsto)</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom:0;">
+            <button type="submit" class="btn btn-primary" style="min-width:140px; width:100%;">
+              Salvar Ganho
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tabela de Ganhos Extras -->
+      <div class="table-wrapper">
+        <table class="clean-table" aria-label="Tabela de Ganhos Extras">
+          <thead>
+            <tr>
+              <th scope="col" style="width:110px;">Data</th>
+              <th scope="col">Origem do Ganho</th>
+              <th scope="col">Situação</th>
+              <th scope="col" style="text-align:right;">Valor</th>
+              <th scope="col" style="text-align:right; width:120px;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="extraIncomeBody">
+            <tr>
+              <td colspan="5" style="text-align:center; padding:2.5rem; color:var(--color-muted);">
+                Nenhum ganho extra registrado neste mês. Use o formulário acima se receber qualquer dinheiro além do salário.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4. SEÇÃO: GASTOS DO DIA A DIA -->
+    <section class="content-section" aria-labelledby="dailyExpensesTitle">
+      <div class="section-header-row">
+        <div>
+          <h2 class="section-heading-title" id="dailyExpensesTitle">3. Gastos do Dia a Dia</h2>
+          <p class="section-heading-desc">Anote suas despesas de rotina: supermercado, padaria, farmácia, transporte, lanches e imprevistos.</p>
+        </div>
+        <div class="tnum" style="font-size:1.1rem; font-weight:700; color:#b91c1c;" id="dailySectionTotal">
+          Total Gasto no Dia a Dia: R$ 0,00
+        </div>
+      </div>
+
+      <!-- Formulário Rápido de Gasto Diário -->
+      <div class="quick-add-card">
+        <div style="font-size:0.95rem; font-weight:700; color:var(--color-navy); margin-bottom:0.75rem;">
+          + Anotar Gasto de Hoje
+        </div>
+        <form id="quickDailyForm" class="quick-form-grid quick-form-grid-daily">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="dailyDesc" style="font-size:0.85rem;">O que comprou?</label>
+            <input type="text" id="dailyDesc" class="form-control" placeholder="Ex: Supermercado, Almoço, Farmácia" required>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="dailyAmount" style="font-size:0.85rem;">Valor (R$)</label>
+            <input type="number" id="dailyAmount" class="form-control" step="0.01" min="0.01" placeholder="0,00" required style="font-weight:700;">
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="dailyCategory" style="font-size:0.85rem;">Categoria de Custo</label>
+            <select id="dailyCategory" class="form-control" required>
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="dailyMethod" style="font-size:0.85rem;">Forma Pagamento</label>
+            <select id="dailyMethod" class="form-control">
+              <option value="PIX">PIX</option>
+              <option value="CARTAO_DEBITO">Cartão Débito</option>
+              <option value="CARTAO_CREDITO">Cartão Crédito</option>
+              <option value="DINHEIRO">Dinheiro</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom:0;">
+            <button type="submit" class="btn btn-primary" style="min-width:140px; width:100%;">
+              Salvar Gasto
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tabela de Gastos Diários -->
+      <div class="table-wrapper">
+        <table class="clean-table" aria-label="Tabela de Gastos do Dia a Dia">
+          <thead>
+            <tr>
+              <th scope="col" style="width:110px;">Data</th>
+              <th scope="col">O que foi</th>
+              <th scope="col">Categoria de Custo</th>
+              <th scope="col">Pagamento</th>
+              <th scope="col" style="text-align:right;">Valor</th>
+              <th scope="col" style="text-align:right; width:140px;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="dailyExpensesBody">
+            <tr>
+              <td colspan="6" style="text-align:center; padding:2.5rem; color:var(--color-muted);">
+                Nenhum gasto do dia a dia cadastrado este mês.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       MODAIS LIMPOS E OBJETIVOS
+       ========================================================================== -->
+
+  <!-- Modal: Configurar Salário e Poupança (Guardar no Mês) -->
+  <div class="modal-overlay" id="salaryModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">Configurar Salário &amp; Poupança</h2>
+        <button class="btn-close" id="btnCloseSalaryModal" aria-label="Fechar">&times;</button>
+      </div>
+      <form id="salaryForm">
+        <div class="modal-body">
+          <p style="font-size:0.95rem; color:var(--color-text-muted); margin-bottom:1.25rem;">
+            A METRON usa seu salário e quanto você deseja guardar por mês para calcular exatamente o quanto você pode gastar por dia sem ficar no vermelho.
+          </p>
+
+          <div class="form-group">
+            <label class="form-label" for="cfgMonthlyIncome">Seu Salário / Renda Líquida Mensal (R$)</label>
+            <input type="number" id="cfgMonthlyIncome" class="form-control" step="0.01" min="0.00" required placeholder="Exemplo: 4000,00" style="font-size:1.2rem; font-weight:700;">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="cfgSavingsGoal">Quanto deseja guardar por mês? (Meta de Economia / Poupança)</label>
+            <input type="number" id="cfgSavingsGoal" class="form-control" step="0.01" min="0.00" placeholder="Ex: 500,00" style="font-size:1.15rem; font-weight:700; color:#047857;">
+            <span class="form-help">Esse valor será guardado todo mês antes de calcular o que sobra para o dia a dia.</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="cfgSalaryDay">Dia do Pagamento</label>
+              <input type="number" id="cfgSalaryDay" class="form-control" min="1" max="31" required placeholder="5">
+              <span class="form-help">Dia do mês em que cai o salário (ex: 5)</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cfgBankBalance">Saldo Atual no Banco (R$)</label>
+              <input type="number" id="cfgBankBalance" class="form-control" step="0.01" min="0.00" placeholder="0,00">
+              <span class="form-help">Dinheiro disponível na conta hoje</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelSalary">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveSalary" style="padding:0.75rem 2rem;">
+            Salvar Configurações
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Editar Gasto ou Conta -->
+  <div class="modal-overlay" id="expenseModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title" id="expenseModalTitle">Editar Gasto</h2>
+        <button class="btn-close" id="btnCloseExpenseModal" aria-label="Fechar">&times;</button>
+      </div>
+      <form id="expenseForm">
+        <div class="modal-body">
+          <input type="hidden" id="expenseId">
+
+          <div class="form-group">
+            <label class="form-label" for="expenseDesc">Descrição</label>
+            <input type="text" id="expenseDesc" class="form-control" required placeholder="Ex: Aluguel, Supermercado...">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="expenseAmount">Valor (R$)</label>
+              <input type="number" id="expenseAmount" class="form-control" step="0.01" min="0.01" required placeholder="0,00" style="font-weight:700;">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="expenseDate">Data do Vencimento / Gasto</label>
+              <input type="date" id="expenseDate" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="expenseCategory">Categoria de Custo</label>
+              <select id="expenseCategory" class="form-control" required>
+                <option value="">Selecione...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="expenseMethod">Forma de Pagamento</label>
+              <select id="expenseMethod" class="form-control" required>
+                <option value="PIX">PIX</option>
+                <option value="BOLETO">Boleto</option>
+                <option value="CARTAO_DEBITO">Cartão Débito</option>
+                <option value="CARTAO_CREDITO">Cartão Crédito</option>
+                <option value="DINHEIRO">Dinheiro</option>
+                <option value="TRANSFERENCIA">Transferência</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="expenseStatus">Situação</label>
+              <select id="expenseStatus" class="form-control">
+                <option value="PAGO">Pago</option>
+                <option value="PENDENTE">Pendente</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="display:flex; align-items:center; gap:0.5rem; padding-top:1.5rem;">
+              <input type="checkbox" id="expenseRecurring" style="width:20px; height:20px; cursor:pointer;">
+              <label for="expenseRecurring" style="font-size:0.95rem; font-weight:600; color:var(--color-navy); cursor:pointer;">
+                É uma Conta Fixa Mensal
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelExpense">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveExpense" style="padding:0.75rem 2rem;">
+            Salvar Alterações
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="metron-footer">
+    <p><strong>METRON</strong> — Não desperdice seu tempo e seu dinheiro.</p>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

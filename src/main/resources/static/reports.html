@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metas e Relatorios — METRON</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <header id="navbarContainer"></header>
+
+  <main class="main-content">
+    <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <h1 class="page-title">Metas e Relatorios</h1>
+        <p class="page-subtitle">Acompanhe seus objetivos de economia e a evolucao das suas financas semanais e mensais.</p>
+      </div>
+
+      <div id="goalsActionHeader">
+        <button class="btn btn-primary" id="btnOpenGoalModal">
+          + Nova Meta de Economia
+        </button>
+      </div>
+    </div>
+
+    <!-- Abas Internas -->
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" data-tab="tab-goals" role="tab" aria-selected="true">
+        Metas de Economia
+      </button>
+      <button class="tab-btn" data-tab="tab-monthly" role="tab" aria-selected="false">
+        Relatório do Mês &amp; PDF
+      </button>
+    </div>
+
+    <!-- ABA 1: Metas de Economia -->
+    <div id="tab-goals" class="tab-panel active" role="tabpanel">
+      <div id="goalsContainer" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;">
+        <div style="grid-column: 1 / -1; text-align:center; padding:3rem; color:var(--color-muted);">
+          Carregando metas financeiras...
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA 3: Relatorio Mensal Completo & PDF -->
+    <div id="tab-monthly" class="tab-panel" role="tabpanel">
+      <!-- Seletor e Botao de Exportacao PDF -->
+      <div class="card" style="padding:1.25rem; margin-bottom:1.75rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+          <div style="display:flex; align-items:center; gap:0.75rem;">
+            <label for="reportMonthPicker" style="font-weight:600; color:var(--color-navy);">Mes do Relatorio:</label>
+            <input type="month" id="reportMonthPicker" class="form-control" style="width:auto; font-weight:600; min-height:44px;">
+          </div>
+
+          <button class="btn btn-primary" id="btnExportPdf" style="font-size:1rem; padding:0.75rem 1.5rem;">
+            Baixar Relatorio Oficial em PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 Indicadores Consolidados -->
+      <div class="metrics-grid-3" style="grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));">
+        <div class="metric-card">
+          <div class="metric-card-title">Renda Total do Mes</div>
+          <div class="metric-card-value" id="repIncome" style="color:#047857;">R$ 0,00</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-card-title">Despesas Totais</div>
+          <div class="metric-card-value" id="repExpense" style="color:#b91c1c;">R$ 0,00</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-card-title">Saldo Final do Mes</div>
+          <div class="metric-card-value" id="repBalance" style="color:var(--color-primary);">R$ 0,00</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-card-title">Taxa de Poupanca</div>
+          <div class="metric-card-value" id="repSavingsRate" style="color:var(--color-navy);">0%</div>
+        </div>
+      </div>
+
+      <!-- Informacoes Detalhadas -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; margin-bottom:1.75rem;">
+        <div class="card" style="margin-bottom:0;">
+          <h2 class="card-title">Categoria com Maior Gasto</h2>
+          <div id="repTopCatName" style="font-size:1.3rem; font-weight:700; color:var(--color-navy); margin-top:0.5rem;">Nenhuma</div>
+          <div id="repTopCatVal" style="font-size:1rem; color:#b91c1c; font-weight:600; margin-top:0.25rem;">R$ 0,00</div>
+        </div>
+
+        <div class="card" style="margin-bottom:0;">
+          <h2 class="card-title">Comparativo Mes Anterior</h2>
+          <div id="repMoMDiff" style="font-size:1.3rem; font-weight:700; color:var(--color-navy); margin-top:0.5rem;">0%</div>
+          <div style="font-size:0.9rem; color:var(--color-text-muted); margin-top:0.25rem;">Variacao no ritmo de gastos</div>
+        </div>
+
+        <div class="card" style="margin-bottom:0;">
+          <h2 class="card-title">Metas no Mes</h2>
+          <div id="repGoalsStatus" style="font-size:1.05rem; font-weight:600; color:var(--color-navy); margin-top:0.5rem;">0 metas alcancadas</div>
+        </div>
+      </div>
+
+      <!-- Recomendacoes para o Proximo Mes -->
+      <div class="card">
+        <h2 class="card-title">Orientacoes Estrategicas para o Proximo Mes</h2>
+        <div id="repRecommendations" style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1rem;"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Nova/Editar Meta -->
+  <div class="modal-overlay" id="goalModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title" id="goalModalTitle">Nova Meta de Economia</h2>
+        <button class="btn-close" id="btnCloseGoalModal" aria-label="Fechar">&times;</button>
+      </div>
+      <form id="goalForm">
+        <div class="modal-body">
+          <input type="hidden" id="goalId">
+
+          <div class="form-group">
+            <label class="form-label" for="goalTitle">Nome do Objetivo</label>
+            <input type="text" id="goalTitle" class="form-control" required placeholder="Exemplo: Reserva de Emergencia, Troca de Carro, Reforma">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="goalTarget">Valor Objetivo (R$)</label>
+              <input type="number" id="goalTarget" class="form-control" step="0.01" min="1" required placeholder="0,00">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="goalCurrent">Valor que Ja Possui (R$)</label>
+              <input type="number" id="goalCurrent" class="form-control" step="0.01" min="0" value="0.00" placeholder="0,00">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="goalDeadline">Data Limite Desejada (opcional)</label>
+              <input type="date" id="goalDeadline" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="goalCategory">Categoria do Objetivo</label>
+              <input type="text" id="goalCategory" class="form-control" placeholder="Exemplo: Seguranca, Lazer, Viagem">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="goalNotes">Anotacoes (opcional)</label>
+            <input type="text" id="goalNotes" class="form-control" placeholder="Motivo ou detalhes da meta">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelGoal">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveGoal">Salvar Meta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Guardar Dinheiro na Meta (Aporte) -->
+  <div class="modal-overlay" id="depositModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">Guardar Dinheiro na Meta</h2>
+        <button class="btn-close" id="btnCloseDepositModal" aria-label="Fechar">&times;</button>
+      </div>
+      <form id="depositForm">
+        <div class="modal-body">
+          <input type="hidden" id="depositGoalId">
+          <p id="depositGoalTitle" style="font-size:1.1rem; font-weight:700; color:var(--color-navy); margin-bottom:1rem;"></p>
+
+          <div class="form-group">
+            <label class="form-label" for="depositAmount">Quanto voce quer guardar agora (R$)?</label>
+            <input type="number" id="depositAmount" class="form-control" step="0.01" min="0.01" required placeholder="0,00" style="font-size:1.25rem; font-weight:700;">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelDeposit">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Confirmar Aporte</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="metron-footer">
+    <p><strong>METRON</strong> — Nao desperdice seu tempo e seu dinheiro.</p>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script src="/js/reports.js"></script>
+</body>
+</html>

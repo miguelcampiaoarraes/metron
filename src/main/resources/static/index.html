@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>METRON — Nao desperdice seu tempo e seu dinheiro</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .hero-section {
+      background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+      color: #ffffff;
+      padding: 5rem 1.5rem;
+      text-align: center;
+    }
+    .hero-container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(13, 148, 136, 0.2);
+      border: 1px solid var(--color-primary);
+      color: #5eead4;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.4rem 1.25rem;
+      border-radius: var(--radius-full);
+      margin-bottom: 1.5rem;
+    }
+    .hero-title {
+      font-size: 2.75rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.03em;
+    }
+    .hero-title span {
+      color: var(--color-primary);
+    }
+    .hero-slogan {
+      font-size: 1.35rem;
+      color: #cbd5e1;
+      margin-bottom: 2rem;
+      font-weight: 400;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .features-section {
+      padding: 5rem 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.75rem;
+      margin-top: 3rem;
+    }
+    .feature-card {
+      background: #ffffff;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .feature-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-navy);
+      margin-bottom: 0.75rem;
+    }
+    .feature-desc {
+      color: var(--color-text-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra Superior Simples -->
+  <header style="background: var(--color-navy); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b;">
+    <a href="/" style="display:flex; align-items:center; text-decoration:none;">
+      <img src="/assets/logo-white.svg" alt="METRON" style="height: 38px;">
+    </a>
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="/login.html" class="btn btn-secondary btn-sm" style="background:transparent; color:#ffffff; border-color:#475569;">
+        Entrar
+      </a>
+      <a href="/register.html" class="btn btn-primary btn-sm">
+        Criar Conta
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <div class="hero-badge">Organizacao Financeira Simples e Direta</div>
+      <h1 class="hero-title">
+        Controle seu dinheiro com <span>clareza absoluta</span>
+      </h1>
+      <p class="hero-slogan">
+        "Nao desperdice seu tempo e seu dinheiro."
+      </p>
+      <p style="font-size: 1.1rem; color: #94a3b8; max-width: 650px; margin: 0 auto 2.5rem auto; line-height: 1.6;">
+        A METRON foi criada para ser simples o bastante para qualquer pessoa usar. Sem planilhas confusas, sem termos complicados e sem poluicao visual.
+      </p>
+      <div class="hero-actions">
+        <a href="/register.html" class="btn btn-primary" style="font-size: 1.15rem; padding: 0.9rem 2.25rem;">
+          Comecar Gratuitamente
+        </a>
+        <a href="/login.html" class="btn btn-secondary" style="font-size: 1.15rem; padding: 0.9rem 2.25rem; background: transparent; color: #ffffff; border-color: #64748b;">
+          Acessar Minha Conta
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Funcionalidades Essenciais (As 5 Solucoes) -->
+  <section class="features-section">
+    <div style="text-align: center; max-width: 650px; margin: 0 auto;">
+      <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--color-navy); margin-bottom: 0.75rem;">
+        Tudo o que voce precisa em 5 telas limpas
+      </h2>
+      <p style="color: var(--color-text-muted); font-size: 1.1rem;">
+        Desenvolvido pensando na facilidade de uso para quem nunca usou um sistema financeiro antes.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <h3 class="feature-title">Quanto Posso Gastar Hoje?</h3>
+        <p class="feature-desc">
+          O sistema calcula seu saldo e recomenda um limite seguro de gastos por dia. Se voce respeitar esse valor, nunca faltara dinheiro para pagar suas contas.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <h3 class="feature-title">Simulador "Posso Comprar?"</h3>
+        <p class="feature-desc">
+          Quer fazer uma compra? Digite o valor antes de gastar e receba na hora uma resposta clara e honesta se a compra cabe ou nao no seu bolso.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <h3 class="feature-title">Movimentacoes Faceis</h3>
+        <p class="feature-desc">
+          Cadastre suas despesas e suas receitas com botoes grandes e formularios curtos. Acompanhe seu extrato sem letras miudas.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <h3 class="feature-title">Planejamento do Mes</h3>
+        <p class="feature-desc">
+          Defina quanto espera receber e quanto planeja gastar. O sistema avisa com antecedencia se o seu ritmo de gastos ameacar suas contas.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <h3 class="feature-title">Metas e Relatorios com PDF</h3>
+        <p class="feature-desc">
+          Estabeleca objetivos de economia, acompanhe sua evolucao semanal e baixe relatorios mensais completos em PDF com 1 clique.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <h3 class="feature-title">Assistente Financeiro</h3>
+        <p class="feature-desc">
+          Tire duvidas praticas a qualquer momento e receba recomendacoes simples em bom portugues, sem economes e sem termos tecnicos.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="metron-footer">
+    <p><strong>METRON</strong> — Nao desperdice seu tempo e seu dinheiro.</p>
+    <p style="margin-top: 0.35rem; font-size: 0.85rem; color: #64748b;">
+      Seguranca e isolamento completo de dados por usuario.
+    </p>
+  </footer>
+
+</body>
+</html>

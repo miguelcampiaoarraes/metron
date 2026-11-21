@@ -1,0 +1,65 @@
+# ============================================================
+# METRON — .gitignore
+# ============================================================
+
+# Maven build output
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDE — IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# IDE — Eclipse / STS
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+
+# IDE — VS Code
+.vscode/
+
+# IDE — NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Spring Boot
+spring-shell.log
+
+# Logs
+*.log
+logs/
+
+# OS — Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# OS — macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Env / Secrets — NUNCA versionar
+.env
+.env.*
+*.env
+application-prod.yml
+application-secrets.yml
+secrets.yml
+
+# Jar duplicado
+*.jar.original

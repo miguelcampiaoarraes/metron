@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuracoes da Conta — METRON</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <header id="navbarContainer"></header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Configuracoes da Conta</h1>
+      <p class="page-subtitle">Ajuste seus parametros financeiros, seus dados de perfil e sua senha de acesso.</p>
+    </div>
+
+    <!-- Alertas e Notificacoes Detectadas -->
+    <div class="card">
+      <h2 class="card-title">Alertas e Avisos do Sistema</h2>
+      <p class="card-desc">Notificacoes importantes sobre seu ritmo de gastos e padroes identificados.</p>
+      <div id="insightsContainer" style="display:flex; flex-direction:column; gap:0.75rem;">
+        <p style="color:var(--color-muted);">Carregando avisos...</p>
+      </div>
+    </div>
+
+    <!-- Parametros Financeiros Pessoais -->
+    <div class="card">
+      <h2 class="card-title">Parametros Financeiros Pessoais</h2>
+      <p class="card-desc">Valores fundamentais que servem de base para o calculo do seu limite diario recomendado.</p>
+
+      <form id="profileForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="profName">Seu Nome Completo</label>
+            <input type="text" id="profName" class="form-control" required minlength="2">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profEmail">E-mail Cadastrado</label>
+            <input type="email" id="profEmail" class="form-control" disabled style="background:#f1f5f9; color:var(--color-muted);">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="profIncome">Renda Mensal Habitual (R$)</label>
+            <input type="number" id="profIncome" class="form-control" step="0.01" min="0" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profSalaryDay">Dia do Pagamento do Salario</label>
+            <input type="number" id="profSalaryDay" class="form-control" min="1" max="31" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="profBalance">Saldo em Conta Informado (R$)</label>
+            <input type="number" id="profBalance" class="form-control" step="0.01" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profSavingsGoal">Meta Mensal de Poupanca (R$)</label>
+            <input type="number" id="profSavingsGoal" class="form-control" step="0.01" min="0">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top:0.5rem; padding:0.75rem 2rem;">
+          Atualizar Dados Financeiros
+        </button>
+      </form>
+    </div>
+
+    <!-- Seguranca e Alteracao de Senha -->
+    <div class="card">
+      <h2 class="card-title">Seguranca da Conta</h2>
+      <p class="card-desc">Deseja trocar sua senha de acesso? Preencha os campos abaixo.</p>
+
+      <form id="passwordForm">
+        <div class="form-group">
+          <label class="form-label" for="currPassword">Senha Atual</label>
+          <input type="password" id="currPassword" class="form-control" required autocomplete="current-password">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="newPassword">Nova Senha (minimo 6 caracteres)</label>
+            <input type="password" id="newPassword" class="form-control" required minlength="6" autocomplete="new-password">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="confirmPassword">Confirme a Nova Senha</label>
+            <input type="password" id="confirmPassword" class="form-control" required minlength="6" autocomplete="new-password">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-secondary" style="margin-top:0.5rem; padding:0.75rem 2rem;">
+          Alterar Senha
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <footer class="metron-footer">
+    <p><strong>METRON</strong> — Nao desperdice seu tempo e seu dinheiro.</p>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script>
+    let currentUser = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!API.requireAuth()) return;
+      renderNavbar('settings');
+
+      await loadProfile();
+      await loadInsights();
+
+      // Formulario de Perfil
+      document.getElementById('profileForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+          name: document.getElementById('profName').value.trim(),
+          monthlyIncome: parseFloat(document.getElementById('profIncome').value) || 0,
+          salaryDay: parseInt(document.getElementById('profSalaryDay').value) || 5,
+          currentBankBalance: parseFloat(document.getElementById('profBalance').value) || 0,
+          savingsGoalMonthly: parseFloat(document.getElementById('profSavingsGoal').value) || 0
+        };
+
+        try {
+          const updated = await API.updateProfile(payload);
+          API.setSession(API.getToken(), updated);
+          UI.showToast('Dados atualizados com sucesso!', 'success');
+          await loadProfile();
+        } catch (err) {
+          UI.showToast(err.message, 'error');
+        }
+      });
+
+      // Formulario de Senha
+      document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const curr = document.getElementById('currPassword').value;
+        const newPass = document.getElementById('newPassword').value;
+        const confirmPass = document.getElementById('confirmPassword').value;
+
+        if (newPass !== confirmPass) {
+          UI.showToast('A confirmacao da nova senha nao confere.', 'error');
+          return;
+        }
+
+        try {
+          await API.updateProfile({
+            name: currentUser.name,
+            currentPassword: curr,
+            newPassword: newPass
+          });
+          UI.showToast('Senha alterada com sucesso!', 'success');
+          document.getElementById('passwordForm').reset();
+        } catch (err) {
+          UI.showToast(err.message, 'error');
+        }
+      });
+    });
+
+    async function loadProfile() {
+      try {
+        currentUser = await API.getProfile();
+        document.getElementById('profName').value = currentUser.name || '';
+        document.getElementById('profEmail').value = currentUser.email || '';
+        document.getElementById('profIncome').value = currentUser.monthlyIncome || 0;
+        document.getElementById('profSalaryDay').value = currentUser.salaryDay || 5;
+        document.getElementById('profBalance').value = currentUser.currentBankBalance || 0;
+        document.getElementById('profSavingsGoal').value = currentUser.savingsGoalMonthly || 0;
+      } catch (err) {
+        UI.showToast('Erro ao carregar dados da conta: ' + err.message, 'error');
+      }
+    }
+
+    async function loadInsights() {
+      const container = document.getElementById('insightsContainer');
+      try {
+        const patterns = await API.getPatterns();
+        const alerts = await API.getAlerts();
+
+        let html = '';
+
+        if (patterns && patterns.length > 0) {
+          html += patterns.map(p => `
+            <div style="background:#fef2f2; border-left:4px solid var(--status-red); padding:0.85rem 1rem; border-radius:var(--radius-sm); font-size:0.95rem; color:#991b1b; line-height:1.5;">
+              <strong>Atencao: ${p.title}</strong> — ${p.message}
+            </div>
+          `).join('');
+        }
+
+        if (alerts && alerts.length > 0) {
+          html += alerts.map(a => `
+            <div style="background:#f8fafc; border-left:4px solid var(--color-primary); padding:0.85rem 1rem; border-radius:var(--radius-sm); font-size:0.95rem; color:var(--color-navy); line-height:1.5; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <strong>${a.title}:</strong> ${a.message}
+              </div>
+              ${!a.read ? `<span class="badge-status VERDE" style="font-size:0.7rem;">NOVO</span>` : ''}
+            </div>
+          `).join('');
+        }
+
+        if (!html) {
+          html = '<p style="color:var(--color-muted);">Nenhum alerta critico ou padrao excessivo detectado no momento. Suas contas estao organizadas!</p>';
+        }
+
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = '<p style="color:var(--color-muted);">Nenhum alerta ativo.</p>';
+      }
+    }
+  </script>
+</body>
+</html>
